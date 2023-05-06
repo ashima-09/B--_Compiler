@@ -9,8 +9,8 @@
     int yyparse(); 
 %}
 
-%token AND OR NOT XOR DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME PARAMETER EQUAL DATA_KEYWORD ARITHEXPR LOGICEXPR COMMA STRING_VALUE DIM DIM_DECL LET INPUT REM PRINT SEMICOLON GOSUB
-
+%token AND OR NOT XOR DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME EQUAL DATA_KEYWORD COMMA STRING_VALUE DIM DIM_DECL LET INPUT REM PRINT SEMICOLON GOSUB OPEN_PAREN CLOSING_PAREN POWER MINUS MULTIPLY DIVISE ADD  GREATER LESS GREATER_EQUAL LESS_EQUAL NOT_EQUAL
+    FOR_LOOP NEXT COMMENT RETURN STOP
 %%
 
 
@@ -21,6 +21,12 @@ line:DEC_NUM function
 
 function:data
     |def
+    |dim
+    |let
+    |input
+    |comments
+    |print
+    |goto
     ;
 
 
@@ -32,8 +38,26 @@ data:DATA_KEYWORD number COMMA STRING_VALUE
 
 def:FUNC_NAME EQUAL number
     |FUNC_NAME EQUAL expr 
-    |FUNC_NAME PARAMETER EQUAL expr 
+    |FUNC_NAME OPEN_PAREN VAR CLOSING_PAREN EQUAL expr 
     ;
+
+ARITHEXPR:OPEN_PAREN
+        |CLOSING_PAREN
+        |POWER
+        |MINUS
+        |MULTIPLY
+        |DIVISE
+        |ADD
+        ;
+
+LOGICEXPR:GREATER
+        |LESS
+        |GREATER_EQUAL
+        |LESS_EQUAL
+        |NOT_EQUAL
+        ;
+
+
 
 declarations: var_declarations COMMA declarations
             |dim_declarations COMMA declarations

@@ -12,9 +12,22 @@
 [\%\!\#\$] {return DATA_TYPE;}
 [0-9]+(\.[0-9]+) {yylval=atoi(yytext);printf("number ");return NUMBER;}
 
-[(\(\))(\^)(\-)(\*)(\/)(\+)] {return ARITHEXPR;}
+\( {printf("open bracket    ");return OPEN_PAREN;}
+\) {printf("closing bracket    ");return CLOSING_PAREN;}
+\^ {return POWER;}
+\- {return MINUS;}
+\* {return MULTIPLY;}
+\/ {return DIVISE;}
+\+ {return ADD;}
+
+
 \= {return EQUAL;}
-[(\>)(\<)(\>\=)(\<\=)(\<\>)] {return LOGICEXPR;}
+
+\> {return GREATER;}
+\< {return LESS;}
+\>\= {return GREATER_EQUAL;}
+\<\= {return LESS_EQUAL;}
+\</> {return NOT_EQUAL;}
 AND {return AND;}
 OR {return OR;}
 NOT {return NOT;}
@@ -35,7 +48,7 @@ REM[ ][A-Z ]* {return COMMENT;}
 RETURN {return RETURN;}
 STOP {return STOP;}
 LET {return LET;}
-\([A-Z]\) {return PARAMETER;}
+
 
 \, {return COMMA;}
 \; {return SEMICOLON;}
