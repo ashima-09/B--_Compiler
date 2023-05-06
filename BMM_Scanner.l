@@ -24,7 +24,8 @@ XOR {return XOR;}
 
 DATA {return DATA_KEYWORD;}
 DEF[ ]FN[A-Z] {printf("def ");return FUNC_NAME;}
-DIM[ ][A-Z]\([0-9]+(\,[0-9]+)?\)(,[A-Z]\([0-9]+(\,[0-9]+)?\))* {return DIM;}
+DIM {return DIM;}
+[A-Z]\([0-9]+(\,[0-9]+)?\)(,[A-Z]\([0-9]+(\,[0-9]+)?\))* {return DIM_DECL;}
 FOR[ ][A-Z][ ]=[ ]([0-9]+|[A-Z])[ ]TO[ ]([0-9]+|[A-Z])[ ](STEP[ ]([0-9]+|[A-Z]))? {return FOR_LOOP;}
 NEXT[ ][A-Z] {return NEXT;}
 GOSUB[ ][0-9]+ {return GOSUB;}

@@ -9,7 +9,7 @@
     int yyparse(); 
 %}
 
-%token AND OR NOT XOR NEW_LINE DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME PARAMETER EQUAL DATA_KEYWORD ARITHEXPR LOGICEXPR COMMA STRING_VALUE
+%token AND OR NOT XOR NEW_LINE DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME PARAMETER EQUAL DATA_KEYWORD ARITHEXPR LOGICEXPR COMMA STRING_VALUE DIM DIM_DECL
 
 %%
 
@@ -35,6 +35,29 @@ def:FUNC_NAME EQUAL number
     |FUNC_NAME PARAMETER EQUAL expr 
     ;
 
+declarations: var_declarations COMMA declarations
+            |dim_declarations COMMA declarations
+            | var_declarations
+            | dim_declarations
+            ;
+
+dim: DIM dim_declarations
+    ;
+
+var_declarations: VAR COMMA var_declarations
+                | VAR DATA_TYPE COMMA var_declarations
+                | VAR DATA_TYPE EQUAL number COMMA var_declarations
+                | VAR DATA_TYPE EQUAL STRING_VALUE COMMA var_declarations
+                | VAR DATA_TYPE EQUAL expr COMMA var_declarations
+                
+                | VAR
+                ;
+
+dim_declarations: DIM_DECL COMMA dim_declarations
+                | DIM_DECL EQUAL number COMMA dim_declarations
+                | DIM_DECL EQUAL number
+                | DIM_DECL
+                ;
 
 alexpr: ARITHEXPR
        | LOGICEXPR
