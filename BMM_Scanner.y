@@ -9,7 +9,7 @@
     int yyparse(); 
 %}
 
-%token AND OR NOT XOR NEW_LINE DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME PARAMETER EQUAL DATA_KEYWORD ARITHEXPR LOGICEXPR COMMA STRING_VALUE DIM DIM_DECL LET
+%token AND OR NOT XOR DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME PARAMETER EQUAL DATA_KEYWORD ARITHEXPR LOGICEXPR COMMA STRING_VALUE DIM DIM_DECL LET INPUT REM PRINT SEMICOLON GOSUB
 
 %%
 
@@ -44,42 +44,109 @@ declarations: var_declarations COMMA declarations
 dim: DIM dim_declarations
     ;
 
-let: LET var_declarations
-    | LET dim_declarations
+let: LET var_initialise
+    | LET dim_initialise
     ;
 
-var_declarations: VAR COMMA var_declarations
+input: INPUT var_declarations
+    | INPUT dim_declarations
+    ;
+
+comments: REM 
+        ;
+
+
+/* var_declarations: VAR COMMA var_declarations
                 | VAR DATA_TYPE COMMA var_declarations
                 | VAR DATA_TYPE EQUAL number COMMA var_declarations
                 | VAR DATA_TYPE EQUAL STRING_VALUE COMMA var_declarations
                 | VAR DATA_TYPE EQUAL expr COMMA var_declarations
-                
+                | VAR
+             ; */
+
+var_declarations: VAR COMMA var_declarations
+                | VAR DATA_TYPE COMMA var_declarations
                 | VAR
                 ;
+            
+var_initialise: var_initialise COMMA var_initialise
+                | VAR DATA_TYPE EQUAL VAR
+                | VAR DATA_TYPE EQUAL VAR DATA_TYPE
+                | VAR DATA_TYPE EQUAL number
+                | VAR DATA_TYPE EQUAL STRING_VALUE
+                | VAR DATA_TYPE EQUAL arithexp
+                | VAR DATA_TYPE EQUAL logicexp
+                | VAR EQUAL VAR
+                | VAR EQUAL VAR DATA_TYPE
+                | VAR EQUAL number
+                | VAR EQUAL STRING_VALUE
+                | VAR EQUAL arithexp
+                | VAR EQUAL logicexp
+                ;
+
+
 
 dim_declarations: DIM_DECL COMMA dim_declarations
-                | DIM_DECL EQUAL number COMMA dim_declarations
-                | DIM_DECL EQUAL number
                 | DIM_DECL
                 ;
 
-alexpr: ARITHEXPR
+dim_initialise: dim_initialise COMMA dim_initialise
+                | DIM_DECL EQUAL DIM_DECL
+                | DIM_DECL EQUAL number
+                ;
+
+/* alexpr: ARITHEXPR
        | LOGICEXPR
        | EQUAL
-       ;
+       ; */
 
-expr: expr alexpr VAR   {printf("bugg1 ");}
+/* expr: expr alexpr VAR   {printf("bugg1 ");}
     | expr alexpr number {printf("bugg2 ");}
     | expr EQUAL VAR {printf("bugg3 ");}
     | VAR {printf("bugg4 ");}
     | number{printf("bugg5 ");}
+    ; */
+
+expr: arithexp
+    | logicexp
     ;
     
+arithexp: arithexp ARITHEXPR VAR
+        | arithexp ARITHEXPR number
+        | '('arithexp')'
+        | VAR
+        | number
+        ;
+
+logicexp: logicexp LOGICEXPR VAR
+        | logicexp LOGICEXPR number
+        | '('logicexp')'
+        | VAR
+        | number
+        ;
+
 number:DEC_NUM
     |NUMBER
     ;
 
+print: PRINT print_statements
+    ;
 
+print_expr: var_declarations
+            | dim_declarations
+            | STRING_VALUE
+            | number
+            | arithexp
+            | logicexp
+            ;
+
+print_statements: print_expr COMMA print_statements
+                | print_expr SEMICOLON print_statements
+                | print_expr
+                ;
+
+goto: GOSUB
+    ;
 
 %%
 
@@ -91,7 +158,7 @@ int main(int argc , char** argv){
 	yyin = fopen(argv[1], "r");
 	yyout = fopen("Lexer.txt", "w");
 	stdout = fopen("Parser.txt", "w");
-   yyparse();
+    yyparse();
 }
 
 void yyerror(char* msg){
