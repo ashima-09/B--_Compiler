@@ -34,6 +34,7 @@ PRINT {return PRINT;}
 REM[ ][A-Z ]* {return COMMENT;}
 RETURN {return RETURN;}
 STOP {return STOP;}
+LET {return LET;}
 \([A-Z]\) {return PARAMETER;}
 
 \, {return COMMA;}
