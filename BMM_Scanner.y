@@ -9,8 +9,8 @@
     int yyparse(); 
 %}
 
-%token AND OR NOT XOR DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME EQUAL DATA_KEYWORD COMMA STRING_VALUE DIM DIM_DECL LET INPUT REM PRINT SEMICOLON GOSUB OPEN_PAREN CLOSING_PAREN POWER MINUS MULTIPLY DIVIDE ADD  GREATER LESS GREATER_EQUAL LESS_EQUAL NOT_EQUAL
-    FOR_LOOP NEXT COMMENT RETURN STOP
+%token AND OR NOT XOR DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME EQUAL DATA_KEYWORD COMMA DIM DIM_DECL LET INPUT PRINT SEMICOLON GOSUB OPEN_PAREN CLOSING_PAREN POWER MINUS MULTIPLY DIVIDE ADD  GREATER LESS GREATER_EQUAL LESS_EQUAL NOT_EQUAL IF THEN
+    COMMENT RETURN STOP END FOR TO STEP STRING NEXT GOTO
 
 
 %left ADD MINUS
@@ -27,21 +27,60 @@ line:DEC_NUM function
 
 function:
     data {printf("statement data \n");}
-    |def {printf("statement def %d\n",$1);}
+    |def {printf("statement def \n");}
     |dim {printf("statement dIM\n");}
     |let {printf("statement LET \n");}
     |input {printf("statement INPUT \n");}
     |comments {printf("statement COMMENTS \n");}
     |print {printf("statement PRINT\n");}
-    |goto
+    |gosub {printf("statement GOSUB\n");}
+    |goto {printf("statement GOTO\n");}
+    |if {printf("STATEMENT IF\n");}
+    |end {printf("STATEMENT END\n");}
+    |stop {printf("STATEMENT STOP\n");}
+    |return {printf("STATEMENT RETURN\n");}
+    |for {printf("STATEMENT FOR\n");}
+    |next {printf("STATEMENT next\n");}
     ;
 
 
-data:DATA_KEYWORD number COMMA STRING_VALUE 
-    |DATA_KEYWORD number COMMA number
-    |DATA_KEYWORD STRING_VALUE COMMA number
-    |DATA_KEYWORD STRING_VALUE COMMA STRING_VALUE
+for:for_loop
+    |for_loop STEP expr
     ;
+
+for_loop:FOR VAR EQUAL expr TO expr
+    ;
+
+
+next:NEXT VAR
+    ;
+
+if:IF expr LOGICEXPR expr THEN DEC_NUM
+    |IF VAR LOGICEXPR expr THEN DEC_NUM
+    |IF expr EQUAL STRING THEN DEC_NUM
+    |IF expr NOT_EQUAL STRING THEN DEC_NUM
+    |IF STRING EQUAL STRING THEN DEC_NUM
+    |IF STRING NOT_EQUAL STRING THEN DEC_NUM
+    |IF VAR DATA_TYPE LOGICEXPR expr THEN DEC_NUM
+    |IF VAR DATA_TYPE EQUAL STRING THEN DEC_NUM
+    |IF VAR DATA_TYPE NOT_EQUAL STRING THEN DEC_NUM
+    |IF dim_declarations LOGICEXPR expr THEN DEC_NUM
+    |IF dim_declarations EQUAL STRING THEN DEC_NUM
+    |IF dim_declarations NOT_EQUAL STRING THEN DEC_NUM
+    ;
+
+
+
+data:DATA_KEYWORD data_values
+    ;
+
+
+data_values: number COMMA data_values
+    |number
+    |STRING COMMA data_values
+    |STRING
+
+
 
 def:FUNC_NAME EQUAL number
     |FUNC_NAME EQUAL expr 
@@ -52,7 +91,7 @@ def:FUNC_NAME EQUAL number
 dim: DIM dim_declarations
     ;
 
-print: PRINT print_statements {printf("printing statement\n");}
+print: PRINT print_statements 
     ;
 
 print_statements: print_expr COMMA print_statements
@@ -62,8 +101,7 @@ print_statements: print_expr COMMA print_statements
 
 print_expr: var_declarations
             | dim_declarations
-            | STRING_VALUE {printf("printing string\n");}
-            //| arithexp
+            | STRING 
             | expr
             ;
 
@@ -80,10 +118,10 @@ dim_initialise: dim_initialise COMMA dim_initialise
 
 var_initialise: var_initialise COMMA var_initialise
                 | VAR DATA_TYPE EQUAL VAR DATA_TYPE
-                | VAR DATA_TYPE EQUAL STRING_VALUE
+                | VAR DATA_TYPE EQUAL STRING
                 | VAR DATA_TYPE EQUAL expr
                 | VAR EQUAL VAR DATA_TYPE
-                | VAR EQUAL STRING_VALUE
+                | VAR EQUAL STRING
                 | VAR EQUAL expr
                 
                 ;
@@ -111,6 +149,7 @@ LOGICEXPR:GREATER
         |GREATER_EQUAL
         |LESS_EQUAL
         |NOT_EQUAL
+        |EQUAL
         ;
 
 number:DEC_NUM
@@ -123,8 +162,8 @@ input: INPUT ip_stmts
     ;
 
 ip_stmts: var_declarations COMMA ip_stmts
-        | var_declarations
         | dim_declarations COMMA ip_stmts
+        | var_declarations
         | dim_declarations
         ;
 
@@ -138,10 +177,23 @@ var_declarations: VAR COMMA var_declarations
                 | VAR
                 ;
             
-comments: REM 
+comments:COMMENT
         ;
 
-goto: GOSUB
+
+gosub: GOSUB
+    ;
+
+goto: GOTO
+    ;
+
+end: END 
+    ;
+
+stop:STOP
+    ;
+
+return:RETURN
     ;
 
 %%

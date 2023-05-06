@@ -7,13 +7,13 @@
 
 %%
 
-[0-9]+ {yylval=atoi(yytext);printf("start ");return DEC_NUM;}
-[A-Z][0-9]? {printf("variable    ");return VAR;}
+[0-9]+ {yylval=atoi(yytext);return DEC_NUM;}
+[A-Z][0-9]? {return VAR;}
 [\%\!\#\$] {return DATA_TYPE;}
-[0-9]+(\.[0-9]+) {yylval=atoi(yytext);printf("number ");return NUMBER;}
+[0-9]+(\.[0-9]+) {yylval=atoi(yytext);return NUMBER;}
 
-\( {printf("open bracket    ");return OPEN_PAREN;}
-\) {printf("closing bracket    ");return CLOSING_PAREN;}
+\( {return OPEN_PAREN;}
+\) {return CLOSING_PAREN;}
 \^ {return POWER;}
 \- {return MINUS;}
 \* {return MULTIPLY;}
@@ -27,34 +27,47 @@
 \< {return LESS;}
 \>\= {return GREATER_EQUAL;}
 \<\= {return LESS_EQUAL;}
-\</> {return NOT_EQUAL;}
+\<\> {return NOT_EQUAL;}
 AND {return AND;}
 OR {return OR;}
 NOT {return NOT;}
 XOR {return XOR;}
 
-\t+    {printf("tab cannot be present . terminating program.");exit(0);};
+\t+    {exit(0);};
 
 DATA {return DATA_KEYWORD;}
-DEF[ ]FN[A-Z] {printf("def ");return FUNC_NAME;}
+DEF[ ]FN[A-Z] {return FUNC_NAME;}
 DIM {return DIM;}
-[A-Z]\(([0-9]+|[A-Z])(\,[0-9]+)?\)(,[A-Z]\([0-9]+(\,[0-9]+)?\))* {printf("dimm   %s",yytext);return DIM_DECL;}
-FOR[ ][A-Z][ ]=[ ]([0-9]+|[A-Z])[ ]TO[ ]([0-9]+|[A-Z])[ ](STEP[ ]([0-9]+|[A-Z]))? {return FOR_LOOP;}
-NEXT[ ][A-Z] {return NEXT;}
+[A-Z]\(([0-9]+|[A-Z])(\,[0-9]+)?\)(,[A-Z]\([0-9]+(\,[0-9]+)?\))* {return DIM_DECL;}
+
+FOR {return FOR;}
+TO {return TO;}
+STEP {return STEP;}
+NEXT {return NEXT;}
+
+
 GOSUB[ ][0-9]+ {return GOSUB;}
+GOTO[ ][0-9]+ {return GOTO;}
+
 INPUT {return INPUT;}
 PRINT {return PRINT;}
-REM[ ][A-Z ]* {return COMMENT;}
+REM[ ]*.* {return COMMENT;}
 RETURN {return RETURN;}
 STOP {return STOP;}
 LET {return LET;}
 
+IF {return IF;}
+THEN {return THEN;}
 
-\, {printf("Comma    ");return COMMA;}
+
+\, {return COMMA;}
 \; {return SEMICOLON;}
-\"[A-Z]+\" {return STRING_VALUE;}
 
-END {exit(0);}
+\".*\" {return STRING;}
+
+
+
+END {return END;}
 
 
 
