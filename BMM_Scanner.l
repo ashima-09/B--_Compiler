@@ -8,7 +8,7 @@
 %%
 
 [0-9]+ {yylval=atoi(yytext);printf("start ");return DEC_NUM;}
-[A-Z][0-9]? {return VAR;}
+[A-Z][0-9]? {printf("variable    ");return VAR;}
 [\%\!\#\$] {return DATA_TYPE;}
 [0-9]+(\.[0-9]+) {yylval=atoi(yytext);printf("number ");return NUMBER;}
 
@@ -17,7 +17,7 @@
 \^ {return POWER;}
 \- {return MINUS;}
 \* {return MULTIPLY;}
-\/ {return DIVISE;}
+\/ {return DIVIDE;}
 \+ {return ADD;}
 
 
@@ -38,7 +38,7 @@ XOR {return XOR;}
 DATA {return DATA_KEYWORD;}
 DEF[ ]FN[A-Z] {printf("def ");return FUNC_NAME;}
 DIM {return DIM;}
-[A-Z]\([0-9]+(\,[0-9]+)?\)(,[A-Z]\([0-9]+(\,[0-9]+)?\))* {return DIM_DECL;}
+[A-Z]\(([0-9]+|[A-Z])(\,[0-9]+)?\)(,[A-Z]\([0-9]+(\,[0-9]+)?\))* {printf("dimm   %s",yytext);return DIM_DECL;}
 FOR[ ][A-Z][ ]=[ ]([0-9]+|[A-Z])[ ]TO[ ]([0-9]+|[A-Z])[ ](STEP[ ]([0-9]+|[A-Z]))? {return FOR_LOOP;}
 NEXT[ ][A-Z] {return NEXT;}
 GOSUB[ ][0-9]+ {return GOSUB;}
@@ -50,7 +50,7 @@ STOP {return STOP;}
 LET {return LET;}
 
 
-\, {return COMMA;}
+\, {printf("Comma    ");return COMMA;}
 \; {return SEMICOLON;}
 \"[A-Z]+\" {return STRING_VALUE;}
 

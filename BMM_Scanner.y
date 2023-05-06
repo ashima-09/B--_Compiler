@@ -9,23 +9,30 @@
     int yyparse(); 
 %}
 
-%token AND OR NOT XOR DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME EQUAL DATA_KEYWORD COMMA STRING_VALUE DIM DIM_DECL LET INPUT REM PRINT SEMICOLON GOSUB OPEN_PAREN CLOSING_PAREN POWER MINUS MULTIPLY DIVISE ADD  GREATER LESS GREATER_EQUAL LESS_EQUAL NOT_EQUAL
+%token AND OR NOT XOR DEC_NUM DATA_TYPE VAR NUMBER FUNC_NAME EQUAL DATA_KEYWORD COMMA STRING_VALUE DIM DIM_DECL LET INPUT REM PRINT SEMICOLON GOSUB OPEN_PAREN CLOSING_PAREN POWER MINUS MULTIPLY DIVIDE ADD  GREATER LESS GREATER_EQUAL LESS_EQUAL NOT_EQUAL
     FOR_LOOP NEXT COMMENT RETURN STOP
+
+
+%left ADD MINUS
+%left MULTIPLY DIVIDE
+%left OPEN_PAREN CLOSING_PAREN
+
 %%
 
 
 
-line:DEC_NUM function
-    |DEC_NUM function line
+line:DEC_NUM function 
+    |DEC_NUM function line 
     ;
 
-function:data
-    |def
-    |dim
-    |let
-    |input
-    |comments
-    |print
+function:
+    data {printf("statement data \n");}
+    |def {printf("statement def %d\n",$1);}
+    |dim {printf("statement dIM\n");}
+    |let {printf("statement LET \n");}
+    |input {printf("statement INPUT \n");}
+    |comments {printf("statement COMMENTS \n");}
+    |print {printf("statement PRINT\n");}
     |goto
     ;
 
@@ -41,12 +48,61 @@ def:FUNC_NAME EQUAL number
     |FUNC_NAME OPEN_PAREN VAR CLOSING_PAREN EQUAL expr 
     ;
 
+
+dim: DIM dim_declarations
+    ;
+
+print: PRINT print_statements {printf("printing statement\n");}
+    ;
+
+print_statements: print_expr COMMA print_statements
+                | print_expr SEMICOLON print_statements
+                | print_expr
+                ;
+
+print_expr: var_declarations
+            | dim_declarations
+            | STRING_VALUE {printf("printing string\n");}
+            //| arithexp
+            | expr
+            ;
+
+let: 
+    LET var_initialise
+    | LET dim_initialise
+    ;
+
+
+dim_initialise: dim_initialise COMMA dim_initialise
+                | DIM_DECL EQUAL DIM_DECL
+                | DIM_DECL EQUAL number
+                ;
+
+var_initialise: var_initialise COMMA var_initialise
+                | VAR DATA_TYPE EQUAL VAR DATA_TYPE
+                | VAR DATA_TYPE EQUAL STRING_VALUE
+                | VAR DATA_TYPE EQUAL expr
+                | VAR EQUAL VAR DATA_TYPE
+                | VAR EQUAL STRING_VALUE
+                | VAR EQUAL expr
+                
+                ;
+
+expr: VAR ARITHEXPR expr
+    | number ARITHEXPR expr
+    | VAR LOGICEXPR expr
+    | number LOGICEXPR expr
+    | '('expr')'
+    | VAR
+    | number
+    ;
+
 ARITHEXPR:OPEN_PAREN
         |CLOSING_PAREN
         |POWER
         |MINUS
         |MULTIPLY
-        |DIVISE
+        |DIVIDE
         |ADD
         ;
 
@@ -57,117 +113,33 @@ LOGICEXPR:GREATER
         |NOT_EQUAL
         ;
 
-
-
-/* declarations: var_declarations COMMA declarations
-            |dim_declarations COMMA declarations
-            | var_declarations
-            | dim_declarations
-            ; */
-
-dim: DIM dim_declarations
+number:DEC_NUM
+    |NUMBER
     ;
 
-let: LET var_initialise
-    | LET dim_initialise
+
+
+input: INPUT ip_stmts
     ;
 
-input: INPUT var_declarations
-    | INPUT dim_declarations
-    ;
-
-comments: REM 
+ip_stmts: var_declarations COMMA ip_stmts
+        | var_declarations
+        | dim_declarations COMMA ip_stmts
+        | dim_declarations
         ;
 
+dim_declarations: DIM_DECL COMMA dim_declarations
+                | DIM_DECL
+                ;
 
-/* var_declarations: VAR COMMA var_declarations
-                | VAR DATA_TYPE COMMA var_declarations
-                | VAR DATA_TYPE EQUAL number COMMA var_declarations
-                | VAR DATA_TYPE EQUAL STRING_VALUE COMMA var_declarations
-                | VAR DATA_TYPE EQUAL expr COMMA var_declarations
-                | VAR
-             ; */
 
 var_declarations: VAR COMMA var_declarations
                 | VAR DATA_TYPE COMMA var_declarations
                 | VAR
                 ;
             
-var_initialise: var_initialise COMMA var_initialise
-                | VAR DATA_TYPE EQUAL VAR
-                | VAR DATA_TYPE EQUAL VAR DATA_TYPE
-                | VAR DATA_TYPE EQUAL number
-                | VAR DATA_TYPE EQUAL STRING_VALUE
-                | VAR DATA_TYPE EQUAL arithexp
-                | VAR DATA_TYPE EQUAL logicexp
-                | VAR EQUAL VAR
-                | VAR EQUAL VAR DATA_TYPE
-                | VAR EQUAL number
-                | VAR EQUAL STRING_VALUE
-                | VAR EQUAL arithexp
-                | VAR EQUAL logicexp
-                ;
-
-
-
-dim_declarations: DIM_DECL COMMA dim_declarations
-                | DIM_DECL
-                ;
-
-dim_initialise: dim_initialise COMMA dim_initialise
-                | DIM_DECL EQUAL DIM_DECL
-                | DIM_DECL EQUAL number
-                ;
-
-/* alexpr: ARITHEXPR
-       | LOGICEXPR
-       | EQUAL
-       ; */
-
-/* expr: expr alexpr VAR   {printf("bugg1 ");}
-    | expr alexpr number {printf("bugg2 ");}
-    | expr EQUAL VAR {printf("bugg3 ");}
-    | VAR {printf("bugg4 ");}
-    | number{printf("bugg5 ");}
-    ; */
-
-expr: arithexp
-    | logicexp
-    ;
-    
-arithexp: arithexp ARITHEXPR VAR
-        | arithexp ARITHEXPR number
-        | '('arithexp')'
-        | VAR
-        | number
+comments: REM 
         ;
-
-logicexp: logicexp LOGICEXPR VAR
-        | logicexp LOGICEXPR number
-        | '('logicexp')'
-        | VAR
-        | number
-        ;
-
-number:DEC_NUM
-    |NUMBER
-    ;
-
-print: PRINT print_statements
-    ;
-
-print_statements: print_expr COMMA print_statements
-                | print_expr SEMICOLON print_statements
-                | print_expr
-                ;
-
-print_expr: var_declarations
-            | dim_declarations
-            | STRING_VALUE
-            | arithexp
-            | logicexp
-            ;
-
 
 goto: GOSUB
     ;
