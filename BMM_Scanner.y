@@ -59,11 +59,11 @@ LOGICEXPR:GREATER
 
 
 
-declarations: var_declarations COMMA declarations
+/* declarations: var_declarations COMMA declarations
             |dim_declarations COMMA declarations
             | var_declarations
             | dim_declarations
-            ;
+            ; */
 
 dim: DIM dim_declarations
     ;
@@ -156,18 +156,18 @@ number:DEC_NUM
 print: PRINT print_statements
     ;
 
-print_expr: var_declarations
-            | dim_declarations
-            | STRING_VALUE
-            | number
-            | arithexp
-            | logicexp
-            ;
-
 print_statements: print_expr COMMA print_statements
                 | print_expr SEMICOLON print_statements
                 | print_expr
                 ;
+
+print_expr: var_declarations
+            | dim_declarations
+            | STRING_VALUE
+            | arithexp
+            | logicexp
+            ;
+
 
 goto: GOSUB
     ;
