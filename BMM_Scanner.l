@@ -24,9 +24,19 @@ XOR {return XOR;}
 
 DATA {return DATA_KEYWORD;}
 DEF[ ]FN[A-Z] {printf("def ");return FUNC_NAME;}
+DIM[ ][A-Z]\([0-9]+(\,[0-9]+)?\)(,[A-Z]\([0-9]+(\,[0-9]+)?\))* {return DIM;}
+FOR[ ][A-Z][ ]=[ ]([0-9]+|[A-Z])[ ]TO[ ]([0-9]+|[A-Z])[ ](STEP[ ]([0-9]+|[A-Z]))? {return FOR_LOOP;}
+NEXT[ ][A-Z] {return NEXT;}
+GOSUB[ ][0-9]+ {return GOSUB;}
+INPUT {return INPUT;}
+PRINT {return PRINT;}
+REM[ ][A-Z ]* {return COMMENT;}
+RETURN {return RETURN;}
+STOP {return STOP;}
 \([A-Z]\) {return PARAMETER;}
 
 \, {return COMMA;}
+\; {return SEMICOLON;}
 \"[A-Z]+\" {return STRING_VALUE;}
 
 END {exit(0);}

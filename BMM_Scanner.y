@@ -36,7 +36,6 @@ def:FUNC_NAME EQUAL number
     ;
 
 
-
 alexpr: ARITHEXPR
        | LOGICEXPR
        | EQUAL
