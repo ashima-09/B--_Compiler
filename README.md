@@ -1,4 +1,4 @@
-# B---Compiler
+# B-- Compiler
 
 This project aims to develop a compiler for the B-- programming language. The compiler is built from scratch using Flex and Bison to generate a lexical analyzer (scanner) and a syntax analyzer (parser) for the B-- source code. The generated analyzers can recognize the syntax of B-- and produce meaningful error messages to identify various syntax errors in the provided sample source codes.
 
